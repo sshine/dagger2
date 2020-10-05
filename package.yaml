@@ -1,0 +1,35 @@
+name: dagger2
+version: 0.0.0
+
+homepage: https://github.com/sshine/dagger2
+author: Simon Shine
+maintainer: shreddedglory@gmail.com
+extra-source-files:
+  - README.md
+
+dependencies:
+  - base
+  - data-fix
+# - data-fix-cse
+
+default-extensions:
+  - OverloadedStrings
+  - RecordWildCards
+
+library:
+  exposed-modules:
+    - Dagger.Contract
+  source-dirs: src
+
+tests:
+  test:
+    main: test.hs
+    source-dirs: test
+    dependencies:
+      - jq
+      - tasty
+      - tasty-discover
+      - tasty-hspec
+      - tasty-hedgehog
+      - hedgehog
+      - hspec
