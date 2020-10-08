@@ -28,16 +28,18 @@ import Data.Text (Text)
 --   * See 'Expr'' for the blockchain-specific variations here.
 --
 data Contract' time asset party expr contract
-  = Zero                                        -- ^ The 'Zero' contract does nothing.
-  | Transfer asset party                        -- ^ The 'Transfer' contract moves @asset@ to @party@.
-  | Scale expr contract                         -- ^ The 'Scale' contract multiplies asset quantities of @contract@.
-  | Both contract contract                      -- ^ The 'Both' contract executes both of its sub-contracts.
-  | Delay time contract                         -- ^ The 'Delay' contract executes @contract@ after @time@.
-  | IfWithin expr time contract contract        -- ^ See the module documentation for 'IfWithin'.
-  | Let (Binding party expr contract) contract  -- ^ Creates @binding@ for use in @contract@.
+  = Zero                                  -- ^ The 'Zero' contract does nothing.
+  | Transfer asset party                  -- ^ The 'Transfer' contract moves @asset@ to @party@.
+  | Scale expr contract                   -- ^ The 'Scale' contract multiplies asset quantities of @contract@.
+  | Both contract contract                -- ^ The 'Both' contract executes both of its sub-contracts.
+  | Delay time contract                   -- ^ The 'Delay' contract executes @contract@ after @time@.
+  | IfWithin expr time contract contract
+  | LetParty Ident party contract
+  | LetExpr Ident expr contract
+  | LetContract Ident contract contract
   deriving (Show, Functor)
 
--- | An 'Expr'' is parameterised over @word@ and @oracle.
+-- | An 'Expr'' is parameterised over @word@ and @oracle@.
 --
 -- Different blockchains have different constraints for expressions:
 --
@@ -72,17 +74,13 @@ data Expr' word oracle expr
   | Oracle oracle
   deriving (Show, Functor)
 
--- | A Dagger contract may start with a series of let-bindings.
---
--- These can be parties, common sub-expressions, or pieces of contract logic.
---
-data Binding party expr contract
-  = BindParty Ident party
-  | BindExpr Ident expr
-  | BindContract Ident contract
-  deriving (Show, Functor)
-
 -- | Variable identifier
 type Ident = Text
 
-type Contract time asset party expr = Fix (Contract' time asset party expr)
+-- | A 'Contract' represents the full syntax tree of Dagger contracts.
+type Contract time asset party expr =
+  Fix (Contract' time asset party expr)
+
+-- | An 'Expr' represents the full syntax tree of Dagger expressions.
+type Expr word oracle =
+  Fix (Expr' word oracle)

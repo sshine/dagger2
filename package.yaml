@@ -10,14 +10,21 @@ dependencies:
   - data-fix
 # - data-fix-cse
   - text
+  - megaparsec
+  - parser-combinators
 
 default-extensions:
+  - LambdaCase
   - OverloadedStrings
   - RecordWildCards
+  - ScopedTypeVariables
 
 library:
   exposed-modules:
     - Dagger.Contract
+    - Dagger.Contract.Parser
+    - Dagger.EVM.Contract
+    - Dagger.Time
   source-dirs: src
 
 tests:
