@@ -27,11 +27,11 @@ parseContract s = first Mega.errorBundlePretty $ parse timeP "" s
 timeP :: Num n => Parser [(n, TimeUnit)]
 timeP = pair `sepBy1` comma
   where
-    pair = (,) <$> number <*> timeUnitP
+    pair = (,) <$> numberP <*> timeUnitP
     comma = symbol ","
 
-    number :: Num n => Parser n
-    number = lexeme Mega.decimal
+    numberP :: Num n => Parser n
+    numberP = lexeme Mega.decimal
 
     timeUnitP :: Parser TimeUnit
     timeUnitP = asum

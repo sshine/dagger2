@@ -2,6 +2,8 @@
 
 module Dagger.Contract.Traversal where
 
+import           Data.Set (Set)
+import qualified Data.Set as Set
 import qualified Data.Fix as Fix
 
 import Dagger.Contract
@@ -17,3 +19,10 @@ countTransfers = Fix.foldFix $ \case
   LetParty _ident _party c -> c
   LetExpr _dent _expr c -> c
   LetContract _ident c1 c2 -> c1 + c2
+
+getTransfers :: (Ord asset, Ord party, Integral word)
+             => Contract time asset party (Expr word oracle)
+             -> [(asset, party, Expr word oracle)]
+getTransfers = Fix.foldFix $ \case
+  Zero -> []
+  Transfer asset party -> pure (asset, party, Const 1)

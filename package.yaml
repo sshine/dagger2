@@ -6,6 +6,7 @@ extra-source-files:
 
 dependencies:
   - base
+  - containers
   - data-dword
   - data-fix
 # - data-fix-cse
@@ -32,10 +33,11 @@ tests:
     main: test.hs
     source-dirs: test
     dependencies:
-      - jq
+      - dagger2
       - tasty
       - tasty-discover
       - tasty-hspec
       - tasty-hedgehog
       - hedgehog
       - hspec
+      - hspec-megaparsec

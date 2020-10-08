@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: dbfa82325cf7cacc8fc53f0932a96c57693ddb79c064484e2635a404c77af2c3
+-- hash: e485f6204e7553f6f1dbd1f163e8335a020a186a00bda0b04cfe6efca0b864f5
 
 name:           dagger2
 version:        0.0.0
@@ -27,6 +27,7 @@ library
   default-extensions: LambdaCase OverloadedStrings RecordWildCards ScopedTypeVariables
   build-depends:
       base
+    , containers
     , data-dword
     , data-fix
     , megaparsec
@@ -45,11 +46,13 @@ test-suite test
   default-extensions: LambdaCase OverloadedStrings RecordWildCards ScopedTypeVariables
   build-depends:
       base
+    , containers
+    , dagger2
     , data-dword
     , data-fix
     , hedgehog
     , hspec
-    , jq
+    , hspec-megaparsec
     , megaparsec
     , parser-combinators
     , tasty
