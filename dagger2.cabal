@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: dbfa82325cf7cacc8fc53f0932a96c57693ddb79c064484e2635a404c77af2c3
+-- hash: 91ffdc2cb1cc42baebdc2b0eecb01d68b448f76723a9732215f0fcca8b515cba
 
 name:           dagger2
 version:        0.0.0
@@ -38,7 +38,6 @@ test-suite test
   type: exitcode-stdio-1.0
   main-is: test.hs
   other-modules:
-      ParserTests
       Paths_dagger2
   hs-source-dirs:
       test
