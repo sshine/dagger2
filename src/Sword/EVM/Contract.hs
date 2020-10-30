@@ -1,11 +1,10 @@
 
-module Dagger.EVM.Contract where
+module Sword.EVM.Contract where
 
 import Data.DoubleWord (Word256)
-import Numeric.Natural (Natural)
 
-import Dagger.Contract
-import Dagger.Time
+import Sword.Contract
+import Sword.Time
 
 type EthereumContract = Contract BlockTimestamp ERC1155 EthereumAddress EthereumExpr
 type EthereumExpr = Expr Word256 ChainlinkAggregatorInterface

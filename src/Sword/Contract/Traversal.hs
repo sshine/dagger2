@@ -1,10 +1,10 @@
 {-# LANGUAGE DeriveFunctor #-}
 
-module Dagger.Contract.Traversal where
+module Sword.Contract.Traversal where
 
 import qualified Data.Fix as Fix
 
-import Dagger.Contract
+import Sword.Contract
 
 countTransfers :: Contract t a p e -> Int
 countTransfers = Fix.foldFix $ \case

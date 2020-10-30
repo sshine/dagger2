@@ -1,6 +1,6 @@
-name: dagger2
+name: Sword-Proto
 version: 0.0.0
-homepage: https://github.com/sshine/dagger2
+homepage: https://github.com/sshine/sword-proto
 extra-source-files:
   - README.md
 
@@ -21,10 +21,10 @@ default-extensions:
 
 library:
   exposed-modules:
-    - Dagger.Contract
-    - Dagger.Contract.Parser
-    - Dagger.EVM.Contract
-    - Dagger.Time
+    - Sword.Contract
+    - Sword.Contract.Parser
+    - Sword.EVM.Contract
+    - Sword.Time
   source-dirs: src
 
 tests:

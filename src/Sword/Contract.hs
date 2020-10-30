@@ -1,6 +1,6 @@
 {-# LANGUAGE DeriveFunctor #-}
 
-module Dagger.Contract where
+module Sword.Contract where
 
 import Data.Fix (Fix)
 import Data.Text (Text)
@@ -20,7 +20,7 @@ import Data.Text (Text)
 --     include ERC20, ERC223, ERC721, ERC777, ERC1155 and ERC1337:
 --     https://crushcrypto.com/ethereum-erc-token-standards/
 --
---   * Dagger contracts may be deployed in many ways. Depending on the way that
+--   * Sword contracts may be deployed in many ways. Depending on the way that
 --     contract parties are handled, they can either be compile-time hardcoded
 --     addresses, or some type that denotes a placeholder entered at runtime
 --     before activating the contract.
@@ -77,10 +77,10 @@ data Expr' word oracle expr
 -- | Variable identifier
 type Ident = Text
 
--- | A 'Contract' represents the full syntax tree of Dagger contracts.
+-- | A 'Contract' represents the full syntax tree of contracts.
 type Contract time asset party expr =
   Fix (Contract' time asset party expr)
 
--- | An 'Expr' represents the full syntax tree of Dagger expressions.
+-- | An 'Expr' represents the full syntax tree of expressions.
 type Expr word oracle =
   Fix (Expr' word oracle)

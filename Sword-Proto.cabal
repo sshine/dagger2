@@ -4,24 +4,24 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 91ffdc2cb1cc42baebdc2b0eecb01d68b448f76723a9732215f0fcca8b515cba
+-- hash: 7af9688fb11096743bb65526924952ffa476551ed78217a61cecfc8c1940a6cc
 
-name:           dagger2
+name:           Sword-Proto
 version:        0.0.0
-homepage:       https://github.com/sshine/dagger2
+homepage:       https://github.com/sshine/sword-proto
 build-type:     Simple
 extra-source-files:
     README.md
 
 library
   exposed-modules:
-      Dagger.Contract
-      Dagger.Contract.Parser
-      Dagger.EVM.Contract
-      Dagger.Time
+      Sword.Contract
+      Sword.Contract.Parser
+      Sword.EVM.Contract
+      Sword.Time
   other-modules:
-      Dagger.Contract.Traversal
-      Paths_dagger2
+      Sword.Contract.Traversal
+      Paths_Sword_Proto
   hs-source-dirs:
       src
   default-extensions: LambdaCase OverloadedStrings RecordWildCards ScopedTypeVariables
@@ -38,7 +38,7 @@ test-suite test
   type: exitcode-stdio-1.0
   main-is: test.hs
   other-modules:
-      Paths_dagger2
+      Paths_Sword_Proto
   hs-source-dirs:
       test
   default-extensions: LambdaCase OverloadedStrings RecordWildCards ScopedTypeVariables

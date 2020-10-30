@@ -1,5 +1,5 @@
 
-module Dagger.Contract.Parser
+module Sword.Contract.Parser
   ( parseContract
   ) where
 
@@ -15,8 +15,8 @@ import qualified Text.Megaparsec.Char.Lexer as Mega
 import qualified Text.Megaparsec.Error as Mega
 import           Control.Monad.Combinators.Expr
 
-import           Dagger.Contract
-import           Dagger.Time
+import           Sword.Contract
+import           Sword.Time
 
 -- Parse: type Contract time asset party expr
 

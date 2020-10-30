@@ -1,5 +1,5 @@
 
-module Dagger.Time where
+module Sword.Time where
 
 import Data.Bifunctor (second)
 import Numeric.Natural (Natural)
