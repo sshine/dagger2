@@ -2,55 +2,29 @@
 
 module Sword.Contract where
 
-import Data.Fix (Fix)
+import Data.Fix (Fix(..))
 import Data.Text (Text)
 
--- | A 'Contract'' is parameterised over @time@, @asset@, @party@ and @expr@.
---
--- Different blockchains handle these differently:
---
---   * In Solidity on Ethereum, one may either use @block.timestamp@ and accept
---     the imprecision of an average block mining length, or use @block.number@
---     which is less ambiguous but also less ergonomic.
---
---   * Depending on the blockchain, the purpose of a contract, and the backend,
---     assets can follow one of many token standards; for example if the asset
---     is fungible or non-fungible, if asset contracts represent multiple token
---     types, or if assets represent subscriptions. On Ethereum, popular ones
---     include ERC20, ERC223, ERC721, ERC777, ERC1155 and ERC1337:
---     https://crushcrypto.com/ethereum-erc-token-standards/
---
---   * Sword contracts may be deployed in many ways. Depending on the way that
---     contract parties are handled, they can either be compile-time hardcoded
---     addresses, or some type that denotes a placeholder entered at runtime
---     before activating the contract.
---
---   * See 'Expr'' for the blockchain-specific variations here.
---
-data Contract' time asset party expr contract
-  = Zero                                  -- ^ The 'Zero' contract does nothing.
-  | Transfer asset party                  -- ^ The 'Transfer' contract moves @asset@ to @party@.
-  | Scale expr contract                   -- ^ The 'Scale' contract multiplies asset quantities of @contract@.
-  | Both contract contract                -- ^ The 'Both' contract executes both of its sub-contracts.
-  | Delay time contract                   -- ^ The 'Delay' contract executes @contract@ after @time@.
-  | IfWithin expr time contract contract
-  | LetParty Ident party contract
-  | LetExpr Ident expr contract
-  | LetContract Ident contract contract
+import Sword.Time
+
+-- | A 'Contract' is...
+type Contract word = Fix (Contract' (Expr word))
+
+-- | An 'Expr' is...
+type Expr word = Fix (Expr' word)
+
+-- | A 'Contract'' is...
+data Contract' expr contract
+  = Zero                                          -- ^ The 'Zero' contract does nothing.
+  | Transfer Asset Party                          -- ^ The 'Transfer' contract moves @asset@ to @party@.
+  | Scale expr contract                           -- ^ The 'Scale' contract multiplies asset quantities of @contract@.
+  | Both contract contract                        -- ^ The 'Both' contract executes both of its sub-contracts.
+  | Delay SwordDiffTime contract                  -- ^ The 'Delay' contract executes @contract@ after @time@.
+  | IfWithin expr SwordDiffTime contract contract -- ^ The 'IfWithin' contract conditionally executes one of its two branches.
   deriving (Show, Functor)
 
--- | An 'Expr'' is parameterised over @word@ and @oracle@.
---
--- Different blockchains have different constraints for expressions:
---
---   * Word sizes and overflow semantics
---
---   * Oracles have different interfaces: On Ethereum the dominant oracle
---     provider is ChainLink, which provides different interfaces for their
---     oracles. On Tezos, oracles are expected to follow an asynchronous
---     callback model.
---
-data Expr' word oracle expr
+-- | An 'Expr'' is...
+data Expr' word expr
   = Add expr expr
   | Sub expr expr
   | Mul expr expr
@@ -69,18 +43,96 @@ data Expr' word oracle expr
   | Leq expr expr
   | Geq expr expr
 
-  | Var Ident
   | Const word
-  | Oracle oracle
+  | Bool Bool
+  | Get Oracle
   deriving (Show, Functor)
 
--- | Variable identifier
-type Ident = Text
+newtype Party = Party Text
+  deriving (Eq, Ord, Show)
 
--- | A 'Contract' represents the full syntax tree of contracts.
-type Contract time asset party expr =
-  Fix (Contract' time asset party expr)
+newtype Asset = Asset Text
+  deriving (Eq, Ord, Show)
 
--- | An 'Expr' represents the full syntax tree of expressions.
-type Expr word oracle =
-  Fix (Expr' word oracle)
+newtype Oracle = Oracle Text
+  deriving (Eq, Ord, Show)
+
+zero :: Contract word
+zero = Fix Zero
+
+transfer :: Asset -> Party -> Contract word
+transfer asset party = Fix (Transfer asset party)
+
+scale :: Expr word -> Contract word -> Contract word
+scale factor contract = Fix (Scale factor contract)
+
+both :: Contract word -> Contract word -> Contract word
+both contract1 contract2 = Fix (Both contract1 contract2)
+
+delay :: SwordDiffTime -> Contract word -> Contract word
+delay time contract = Fix (Delay time contract)
+
+ifWithin :: Expr word
+         -> SwordDiffTime
+         -> Contract word
+         -> Contract word
+         -> Contract word
+ifWithin cond time thenContract elseContract =
+  Fix (IfWithin cond time thenContract elseContract)
+
+binopFix :: (x -> y -> f (Fix f)) -> x -> y -> Fix f
+binopFix op x y = Fix (op x y)
+
+add :: Expr word -> Expr word -> Expr word
+add = binopFix Add
+
+sub :: Expr word -> Expr word -> Expr word
+sub = binopFix Sub
+
+mul :: Expr word -> Expr word -> Expr word
+mul = binopFix Mul
+
+div :: Expr word -> Expr word -> Expr word
+div = binopFix Div
+
+min :: Expr word -> Expr word -> Expr word
+min = binopFix Min
+
+max :: Expr word -> Expr word -> Expr word
+max = binopFix Max
+
+and :: Expr word -> Expr word -> Expr word
+and = binopFix And
+
+or :: Expr word -> Expr word -> Expr word
+or = binopFix Or
+
+not :: Expr word -> Expr word
+not p = Fix (Not p)
+
+eq :: Expr word -> Expr word -> Expr word
+eq = binopFix Eq
+
+lt :: Expr word -> Expr word -> Expr word
+lt = binopFix Lt
+
+gt :: Expr word -> Expr word -> Expr word
+gt = binopFix Gt
+
+leq :: Expr word -> Expr word -> Expr word
+leq = binopFix Leq
+
+geq :: Expr word -> Expr word -> Expr word
+geq = binopFix Geq
+
+if' :: Expr word -> Expr word -> Expr word -> Expr word
+if' c x y = Fix (If c x y)
+
+const :: word -> Expr word
+const word = Fix (Const word)
+
+bool :: Bool -> Expr word
+bool b = Fix (Bool b)
+
+get :: Oracle -> Expr word
+get oracle = Fix (Get oracle)

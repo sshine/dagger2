@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 7af9688fb11096743bb65526924952ffa476551ed78217a61cecfc8c1940a6cc
+-- hash: 450df64b7376f7194d3f33a6ea8039c28592f6f5575667adaceea9e3ce2fd987
 
 name:           Sword-Proto
 version:        0.0.0
@@ -17,21 +17,21 @@ library
   exposed-modules:
       Sword.Contract
       Sword.Contract.Parser
-      Sword.EVM.Contract
       Sword.Time
   other-modules:
-      Sword.Contract.Traversal
       Paths_Sword_Proto
   hs-source-dirs:
       src
   default-extensions: LambdaCase OverloadedStrings RecordWildCards ScopedTypeVariables
   build-depends:
       base
+    , containers
     , data-dword
     , data-fix
     , megaparsec
     , parser-combinators
     , text
+    , thyme
   default-language: Haskell2010
 
 test-suite test
@@ -44,6 +44,7 @@ test-suite test
   default-extensions: LambdaCase OverloadedStrings RecordWildCards ScopedTypeVariables
   build-depends:
       base
+    , containers
     , data-dword
     , data-fix
     , hedgehog
@@ -56,4 +57,5 @@ test-suite test
     , tasty-hedgehog
     , tasty-hspec
     , text
+    , thyme
   default-language: Haskell2010

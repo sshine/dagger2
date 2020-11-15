@@ -6,10 +6,12 @@ extra-source-files:
 
 dependencies:
   - base
+  - containers
   - data-dword
   - data-fix
 # - data-fix-cse
   - text
+  - thyme
   - megaparsec
   - parser-combinators
 
@@ -23,7 +25,6 @@ library:
   exposed-modules:
     - Sword.Contract
     - Sword.Contract.Parser
-    - Sword.EVM.Contract
     - Sword.Time
   source-dirs: src
 
