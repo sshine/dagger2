@@ -3,7 +3,6 @@ module Sword.Time where
 
 import qualified Data.Map as Map
 import           Data.Map (Map)
-import           Data.Thyme.Clock (NominalDiffTime, fromSeconds)
 import           Numeric.Natural (Natural)
 import           Data.Monoid (Sum(..))
 
@@ -48,9 +47,3 @@ timeUnitFactor = \case
   Hours -> 60 * 60
   Days -> 60 * 60 * 24
   Weeks -> 60 * 60 * 24 * 7
-
-toNominalDiffTime :: SwordDiffTime -> NominalDiffTime
-toNominalDiffTime =
-  fromSeconds . getSum . Map.foldMapWithKey unitSeconds . unSwordDiffTime
-  where
-    unitSeconds unit qty = Sum (timeUnitFactor unit * qty)

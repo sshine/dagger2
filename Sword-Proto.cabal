@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: b61c1bcc75c9a0b62a4457cb7d09c1e815e29aaed7d53a9a487cc9d2e7359f2a
+-- hash: 954c5ce23152046944d598db5eb1e846257db51102596a09155db47fa17740e4
 
 name:           Sword-Proto
 version:        0.0.0
@@ -32,7 +32,6 @@ library
     , parser-combinators
     , prettyprinter
     , text
-    , thyme
   default-language: Haskell2010
 
 test-suite test
@@ -58,5 +57,4 @@ test-suite test
     , tasty-hedgehog
     , tasty-hspec
     , text
-    , thyme
   default-language: Haskell2010

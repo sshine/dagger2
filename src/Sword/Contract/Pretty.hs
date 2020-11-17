@@ -5,7 +5,6 @@ module Sword.Contract.Pretty
 
 import qualified Data.List as List
 import qualified Data.Map as Map
-import qualified Data.Text as Text
 import           Data.Text (Text)
 import           Data.Text.Prettyprint.Doc
 import           Data.Text.Prettyprint.Doc.Render.Text (renderStrict)

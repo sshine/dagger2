@@ -9,7 +9,6 @@ dependencies:
   - containers
   - data-dword
   - text
-  - thyme
   - megaparsec
   - parser-combinators
   - prettyprinter
