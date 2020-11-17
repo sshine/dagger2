@@ -7,6 +7,7 @@ import           Data.Thyme.Clock (NominalDiffTime, fromSeconds)
 import           Numeric.Natural (Natural)
 import           Data.Monoid (Sum(..))
 
+-- FIXME: Add 'Now' as alternative option.
 newtype SwordDiffTime = SwordDiffTime { unSwordDiffTime :: Map TimeUnit Natural }
   deriving (Eq, Show)
 

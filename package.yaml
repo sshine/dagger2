@@ -8,18 +8,18 @@ dependencies:
   - base
   - containers
   - data-dword
-  - data-fix
-# - data-fix-cse
   - text
   - thyme
   - megaparsec
   - parser-combinators
+  - prettyprinter
 
 default-extensions:
   - LambdaCase
   - OverloadedStrings
   - RecordWildCards
   - ScopedTypeVariables
+  - TypeApplications
 
 library:
   exposed-modules:

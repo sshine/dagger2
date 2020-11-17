@@ -19,8 +19,7 @@ import qualified Text.Megaparsec.Error as Mega
 import           Control.Monad.Combinators.Expr (makeExprParser, Operator(..))
 import           Numeric.Natural (Natural)
 
-import qualified Sword.Contract as C
-import           Sword.Contract (Contract, Expr, Asset, Party, Oracle)
+import           Sword.Contract (Contract(..), Expr(..), Party(..), Asset(..), Oracle(..))
 import           Sword.Time (seconds, minutes, hours, days, weeks, SwordDiffTime)
 
 type Parser = Parsec Void Text
@@ -42,26 +41,26 @@ contractP = asum
   ]
 
 zeroP :: Integral word => Parser (Contract word)
-zeroP = C.zero <$ symbol "zero"
+zeroP = Zero <$ symbol "zero"
 
 transferP :: Integral word => Parser (Contract word)
 transferP =
-  fun "transfer" $ C.transfer <$> assetP
+  fun "transfer" $ Transfer <$> assetP
                 <* symbol "," <*> partyP
 
 scaleP :: Integral word => Parser (Contract word)
 scaleP =
-  fun "scale" $ C.scale <$> exprP
+  fun "scale" $ Scale <$> exprP
           <* symbol "," <*> contractP
 
 bothP :: Integral word => Parser (Contract word)
 bothP =
-  fun "both" $ C.both <$> contractP
+  fun "both" $ Both <$> contractP
         <* symbol "," <*> contractP
 
 delayP :: Integral word => Parser (Contract word)
 delayP =
-  fun "delay" $ C.delay <$> swordDiffTimeP
+  fun "delay" $ Delay <$> swordDiffTimeP
           <* symbol "," <*> contractP
 
 ifWithinP :: Integral word => Parser (Contract word)
@@ -70,46 +69,52 @@ ifWithinP = do
   time <- symbol "within" *> swordDiffTimeP
   thenC <- symbol "then" *> contractP
   elseC <- symbol "else" *> contractP
-  pure (C.ifWithin cond time thenC elseC)
+  pure (IfWithin cond time thenC elseC)
 
 assetP :: Parser Asset
-assetP = C.Asset <$> takeWhile1P Nothing isLetter <?> "asset"
+assetP = Asset <$> takeWhile1P Nothing isLetter <?> "asset"
 
 partyP :: Parser Party
-partyP = C.Party <$> takeWhile1P Nothing isLetter <?> "party"
+partyP = Party <$> takeWhile1P Nothing isLetter <?> "party"
 
 oracleP :: Parser Oracle
-oracleP = C.Oracle <$> takeWhile1P Nothing isLetter
+oracleP = Oracle <$> takeWhile1P Nothing isLetter
 
 exprP :: Integral word => Parser (Expr word)
 exprP =
   label "expression" $
-    makeExprParser termP
-      [ [ InfixL (C.mul <$ symbol "*")
-        , InfixL (C.div <$ symbol "/")
+    ifExprP <|> makeExprParser termP
+      [ [ InfixL (Mul <$ symbol "*")
+        , InfixL (Div <$ symbol "/")
         ]
-      , [ InfixL (C.add <$ symbol "+")
-        , InfixL (C.sub <$ symbol "-")
+      , [ InfixL (Add <$ symbol "+")
+        , InfixL (Sub <$ symbol "-")
         ]
-      , [ InfixN (C.eq <$ symbol "=")
-        , InfixN (C.geq <$ symbol ">=")
-        , InfixN (C.leq <$ symbol "<=")
-        , InfixN (C.lt <$ symbol "<")
-        , InfixN (C.gt <$ symbol ">")
+      , [ InfixN (Eq <$ symbol "=")
+        , InfixN (Geq <$ symbol ">=")
+        , InfixN (Leq <$ symbol "<=")
+        , InfixN (Lt <$ symbol "<")
+        , InfixN (Gt <$ symbol ">")
         ]
-      , [ InfixL (C.and <$ keyword "and") ]
-      , [ InfixL (C.or <$ keyword "or") ]
+      , [ InfixL (And <$ keyword "&&") ]
+      , [ InfixL (Or <$ keyword "||") ]
       ]
+
+ifExprP :: Integral word => Parser (Expr word)
+ifExprP =
+  If <$> (keyword "if" *> exprP)
+     <*> (keyword "then" *> exprP)
+     <*> (keyword "else" *> exprP)
 
 termP :: Integral word => Parser (Expr word)
 termP = asum
-  [ fun "min" $ C.min <$> exprP <* symbol "," <*> exprP
-  , fun "max" $ C.max <$> exprP <* symbol "," <*> exprP
-  , fun "not" $ C.not <$> exprP
-  , fun "get" $ C.get <$> oracleP
-  , C.const <$> constP
-  , C.bool True <$ keyword "true"
-  , C.bool False <$ keyword "false"
+  [ fun "min" $ Min <$> exprP <* symbol "," <*> exprP
+  , fun "max" $ Max <$> exprP <* symbol "," <*> exprP
+  , fun "not" $ Not <$> exprP
+  , fun "get" $ Get <$> oracleP
+  , Const <$> constP
+  , Bool True <$ keyword "true"
+  , Bool False <$ keyword "false"
   , parens exprP
   ]
 
