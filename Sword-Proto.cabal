@@ -38,6 +38,8 @@ test-suite test
   type: exitcode-stdio-1.0
   main-is: test.hs
   other-modules:
+      PrettyTest
+      PropTests
       Paths_Sword_Proto
   hs-source-dirs:
       test
