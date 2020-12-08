@@ -24,6 +24,7 @@ library:
   exposed-modules:
     - Sword.Contract
     - Sword.Contract.Parser
+    - Sword.Contract.Pretty
     - Sword.Time
   source-dirs: src
 
@@ -32,7 +33,7 @@ tests:
     main: test.hs
     source-dirs: test
     dependencies:
-      - jq
+      - Sword-Proto
       - tasty
       - tasty-discover
       - tasty-hspec

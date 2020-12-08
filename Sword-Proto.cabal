@@ -17,9 +17,9 @@ library
   exposed-modules:
       Sword.Contract
       Sword.Contract.Parser
+      Sword.Contract.Pretty
       Sword.Time
   other-modules:
-      Sword.Contract.Pretty
       Paths_Sword_Proto
   hs-source-dirs:
       src
@@ -43,12 +43,12 @@ test-suite test
       test
   default-extensions: LambdaCase OverloadedStrings RecordWildCards ScopedTypeVariables TypeApplications
   build-depends:
-      base
+      Sword-Proto
+    , base
     , containers
     , data-dword
     , hedgehog
     , hspec
-    , jq
     , megaparsec
     , parser-combinators
     , prettyprinter
