@@ -1,13 +1,11 @@
-
 module Sword.Time where
 
+import Data.Map (Map)
 import qualified Data.Map as Map
-import           Data.Map (Map)
-import           Numeric.Natural (Natural)
-import           Data.Monoid (Sum(..))
+import Numeric.Natural (Natural)
 
 -- FIXME: Add 'Now' as alternative option.
-newtype SwordDiffTime = SwordDiffTime { unSwordDiffTime :: Map TimeUnit Natural }
+newtype SwordDiffTime = SwordDiffTime {unSwordDiffTime :: Map TimeUnit Natural}
   deriving (Eq, Show)
 
 data TimeUnit

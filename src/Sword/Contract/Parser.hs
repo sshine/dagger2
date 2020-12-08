@@ -1,26 +1,25 @@
-
 module Sword.Contract.Parser
-  ( parseContract
-  , parseSwordDiffTime
-  ) where
+  ( parseContract,
+    parseSwordDiffTime,
+  )
+where
 
-import           Control.Monad (void)
-import           Data.Bifunctor (first)
-import           Data.Char (isLetter)
-import           Data.Foldable (asum)
-import           Data.Functor (($>))
+import Control.Monad (void)
+import Control.Monad.Combinators.Expr (Operator (..), makeExprParser)
+import Data.Bifunctor (first)
+import Data.Char (isLetter)
+import Data.Foldable (asum)
+import Data.Functor (($>))
+import Data.Text (Text)
 import qualified Data.Text as Text
-import           Data.Text (Text)
-import           Data.Void (Void)
-import           Text.Megaparsec
-import           Text.Megaparsec.Char (space)
+import Data.Void (Void)
+import Numeric.Natural (Natural)
+import Sword.Contract (Asset (..), Contract (..), Expr (..), Oracle (..), Party (..))
+import Sword.Time (SwordDiffTime, days, hours, minutes, seconds, weeks)
+import Text.Megaparsec
+import Text.Megaparsec.Char (space)
 import qualified Text.Megaparsec.Char.Lexer as Mega
 import qualified Text.Megaparsec.Error as Mega
-import           Control.Monad.Combinators.Expr (makeExprParser, Operator(..))
-import           Numeric.Natural (Natural)
-
-import           Sword.Contract (Contract(..), Expr(..), Party(..), Asset(..), Oracle(..))
-import           Sword.Time (seconds, minutes, hours, days, weeks, SwordDiffTime)
 
 type Parser = Parsec Void Text
 
@@ -31,37 +30,38 @@ parseSwordDiffTime :: Text -> Either String SwordDiffTime
 parseSwordDiffTime = first Mega.errorBundlePretty . parse swordDiffTimeP ""
 
 contractP :: Integral word => Parser (Contract word)
-contractP = asum
-  [ zeroP <?> "zero"
-  , transferP <?> "transfer"
-  , scaleP <?> "scale"
-  , bothP <?> "both"
-  , delayP <?> "delay"
-  , ifWithinP <?> "if-within"
-  ]
+contractP =
+  asum
+    [ zeroP <?> "zero",
+      transferP <?> "transfer",
+      scaleP <?> "scale",
+      bothP <?> "both",
+      delayP <?> "delay",
+      ifWithinP <?> "if-within"
+    ]
 
 zeroP :: Integral word => Parser (Contract word)
 zeroP = Zero <$ symbol "zero"
 
 transferP :: Integral word => Parser (Contract word)
 transferP =
-  fun "transfer" $ Transfer <$> assetP
-                <* symbol "," <*> partyP
+  fun "transfer" $
+    Transfer <$> assetP <* symbol "," <*> partyP
 
 scaleP :: Integral word => Parser (Contract word)
 scaleP =
-  fun "scale" $ Scale <$> exprP
-          <* symbol "," <*> contractP
+  fun "scale" $
+    Scale <$> exprP <* symbol "," <*> contractP
 
 bothP :: Integral word => Parser (Contract word)
 bothP =
-  fun "both" $ Both <$> contractP
-        <* symbol "," <*> contractP
+  fun "both" $
+    Both <$> contractP <* symbol "," <*> contractP
 
 delayP :: Integral word => Parser (Contract word)
 delayP =
-  fun "delay" $ Delay <$> swordDiffTimeP
-          <* symbol "," <*> contractP
+  fun "delay" $
+    Delay <$> swordDiffTimeP <* symbol "," <*> contractP
 
 ifWithinP :: Integral word => Parser (Contract word)
 ifWithinP = do
@@ -83,44 +83,47 @@ oracleP = Oracle <$> takeWhile1P Nothing isLetter
 exprP :: Integral word => Parser (Expr word)
 exprP =
   label "expression" $
-    ifExprP <|> makeExprParser termP
-      [ [ InfixL (Mul <$ symbol "*")
-        , InfixL (Div <$ symbol "/")
+    ifExprP
+      <|> makeExprParser
+        termP
+        [ [ InfixL (Mul <$ symbol "*"),
+            InfixL (Div <$ symbol "/")
+          ],
+          [ InfixL (Add <$ symbol "+"),
+            InfixL (Sub <$ symbol "-")
+          ],
+          [ InfixN (Eq <$ symbol "="),
+            InfixN (Geq <$ symbol ">="),
+            InfixN (Leq <$ symbol "<="),
+            InfixN (Lt <$ symbol "<"),
+            InfixN (Gt <$ symbol ">")
+          ],
+          [InfixL (And <$ keyword "&&")],
+          [InfixL (Or <$ keyword "||")]
         ]
-      , [ InfixL (Add <$ symbol "+")
-        , InfixL (Sub <$ symbol "-")
-        ]
-      , [ InfixN (Eq <$ symbol "=")
-        , InfixN (Geq <$ symbol ">=")
-        , InfixN (Leq <$ symbol "<=")
-        , InfixN (Lt <$ symbol "<")
-        , InfixN (Gt <$ symbol ">")
-        ]
-      , [ InfixL (And <$ keyword "&&") ]
-      , [ InfixL (Or <$ keyword "||") ]
-      ]
 
 ifExprP :: Integral word => Parser (Expr word)
 ifExprP =
   If <$> (keyword "if" *> exprP)
-     <*> (keyword "then" *> exprP)
-     <*> (keyword "else" *> exprP)
+    <*> (keyword "then" *> exprP)
+    <*> (keyword "else" *> exprP)
 
 termP :: Integral word => Parser (Expr word)
-termP = asum
-  [ fun "min" $ Min <$> exprP <* symbol "," <*> exprP
-  , fun "max" $ Max <$> exprP <* symbol "," <*> exprP
-  , fun "not" $ Not <$> exprP
-  , fun "get" $ Get <$> oracleP
-  , Const <$> constP
-  , Bool True <$ keyword "true"
-  , Bool False <$ keyword "false"
-  , parens exprP
-  ]
+termP =
+  asum
+    [ fun "min" $ Min <$> exprP <* symbol "," <*> exprP,
+      fun "max" $ Max <$> exprP <* symbol "," <*> exprP,
+      fun "not" $ Not <$> exprP,
+      fun "get" $ Get <$> oracleP,
+      Const <$> constP,
+      Bool True <$ keyword "true",
+      Bool False <$ keyword "false",
+      parens exprP
+    ]
 
 constP :: Integral word => Parser word
 constP =
-  asum [ Mega.decimal, chunk "0x" *> Mega.hexadecimal ] <?> "integer"
+  asum [Mega.decimal, chunk "0x" *> Mega.hexadecimal] <?> "integer"
 
 swordDiffTimeP :: Parser SwordDiffTime
 swordDiffTimeP =
@@ -136,13 +139,14 @@ singleSwordDiffTimeP = do
     timeQtyP = lexeme Mega.decimal
 
     timeUnitP :: Parser (Natural -> SwordDiffTime)
-    timeUnitP = asum
-      [ plural "second" $> seconds
-      , plural "minute" $> minutes
-      , plural "hour"   $> hours
-      , plural "day"    $> days
-      , plural "week"   $> weeks
-      ]
+    timeUnitP =
+      asum
+        [ plural "second" $> seconds,
+          plural "minute" $> minutes,
+          plural "hour" $> hours,
+          plural "day" $> days,
+          plural "week" $> weeks
+        ]
 
     plural :: Text -> Parser ()
     plural word =
