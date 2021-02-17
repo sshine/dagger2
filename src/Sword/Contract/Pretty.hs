@@ -35,16 +35,22 @@ prettyC :: Contract word -> Doc ann
 prettyC = \case
   Zero ->
     prettyText "zero"
+
   Transfer (Asset asset) (Party party) ->
     prettyFun "transfer" [prettyText asset, prettyText party]
+
   Scale factor contract ->
     prettyFun "scale" [prettyExpr factor, prettyC contract]
+
   Both contract1 contract2 ->
     prettyFun "both" [prettyC contract1, prettyC contract2]
+
   Delay time contract ->
     prettyFun "delay" [prettyTime time, prettyC contract]
+
   IfWithin cond time thenContract elseContract ->
-    prettyText "if" <+> prettyExpr cond
+    prettyText "if"
+      <+> prettyExpr cond
       <+> prettyText "within"
       <+> prettyTime time
       <+> prettyText "then"
