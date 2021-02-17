@@ -151,7 +151,8 @@ isAssociative = \case
 
 -- FIXME: Make this look actually pretty.
 prettyFun :: Text -> [Doc ann] -> Doc ann
-prettyFun name args = prettyText name <> parens (commas args)
+prettyFun name args =
+  prettyText name <> parens (nest 2 (line <> commas args))
 
 commas :: [Doc ann] -> Doc ann
 commas = sep . punctuate comma

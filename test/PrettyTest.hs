@@ -12,5 +12,5 @@ spec_prettyContract_transfer_wraps =
         `shouldBe` "transfer(USD, Simon)"
 
     it "prints across lines with indentation when it doesn't fit on one line" $
-      prettyContractN 19 (Transfer (Asset "USD") (Party "Simon"))
+      prettyContractN 10 (Transfer (Asset "USD") (Party "Simon"))
         `shouldBe` "transfer(\n  USD,\n  Simon)"
