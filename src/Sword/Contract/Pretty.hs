@@ -7,9 +7,10 @@ where
 import qualified Data.List as List
 import qualified Data.Map as Map
 import Data.Text (Text)
-import Data.Text.Prettyprint.Doc
-import Data.Text.Prettyprint.Doc.Render.Text (renderStrict)
 import Numeric.Natural (Natural)
+import Prettyprinter
+import Prettyprinter.Render.Text (renderStrict)
+
 import Sword.Contract
 import Sword.Time
 
